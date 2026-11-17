@@ -6,10 +6,46 @@
 #include <string.h>
 #include "errno.h"
 #include <stdlib.h>
+#include <stdbool.h>
+#include "esp_log.h"
+
+uint8_t checksum_calculator(const char *incoming_data, int data_length) {
+    uint8_t calculated = 0;
+    for (int i = 0; i < data_length; i++) {
+        calculated ^= incoming_data[i];
+    }
+    return calculated;
+}
+
+bool is_valid_packet(char *incoming_packet) {
+    char *star_pointer = strchr(incoming_packet, '*');
+    if (star_pointer != NULL) {
+        *star_pointer = '\0';
+        if (incoming_packet == NULL || incoming_packet[0] != '$') return false;
+        char *original_data = incoming_packet + 1;
+        char *checksum_data = star_pointer + 1;
+
+        if (*checksum_data == '\0') {
+            return false;
+        }
+
+        uint8_t incoming_checksum = (uint8_t)strtol(checksum_data, NULL, 16);
+        uint8_t our_checksum_calculation = checksum_calculator(original_data, strlen(original_data));
+
+        ESP_LOGD("GPS_DEBUG", "Incoming: 0x%02X | Calculated: 0x%02X", incoming_checksum, our_checksum_calculation);
+        if (incoming_checksum == our_checksum_calculation) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    return false;
+}
 
 double parse_safe_double(const char *data) {
     if (data == NULL) return -9999;
-    
+
     char *error_indicator;   
     errno = 0;
     double value = strtod(data, &error_indicator);
@@ -32,8 +68,11 @@ double parse_safe_double(const char *data) {
 }
 
 void parse_gps_data(char *incoming_text) {
+
+    if (!is_valid_packet(incoming_text)) { ESP_LOGW("GPS", "Invalid package!"); return; }
+
     char *saveptr;
-    char *piece = strtok_r(incoming_text, ",", &saveptr);  //for example incoming_text: "$GPS,40.123,29.456"
+    char *piece = strtok_r(incoming_text, ",", &saveptr);  //for example incoming_text: "$GPS,598.5,65.6*70" should true
     if ((piece != NULL) && (strcmp(piece, "$GPS") == 0)) {
         piece = strtok_r(NULL, ",", &saveptr);
         double latitude = parse_safe_double(piece);
