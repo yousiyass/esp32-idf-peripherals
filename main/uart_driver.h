@@ -10,4 +10,7 @@ int uart_driver_read_bytes(uint8_t *buf, size_t max_len, uint32_t timeout_ms);
 
 void uart_listening_task(void *pvParameters);
 
+typedef void (*uart_callback_t)(char *incoming_line);
+void uart_callback_save(uart_callback_t new_function);
+
 #endif 

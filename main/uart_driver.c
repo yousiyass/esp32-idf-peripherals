@@ -10,6 +10,11 @@ static const char *TAG = "UART_DRIVER";
 
 static QueueHandle_t uart_queue = NULL;
 
+static uart_callback_t s_registered_function = NULL;
+void uart_callback_save(uart_callback_t new_function) {
+    s_registered_function = new_function;
+}
+
 esp_err_t uart_driver_init(void) {
     uart_config_t uart_config = {
         .baud_rate = 115200,
@@ -45,6 +50,11 @@ void uart_listening_task(void *pvParameters) {
                             if (line_idx > 0) {
                                 line_buf[line_idx] = '\0';
                                 ESP_LOGI(TAG, "received line: %s", line_buf);
+
+                                if (s_registered_function != NULL) {
+                                    s_registered_function(line_buf);
+                                }
+
                                 line_idx = 0;
                             }
                         }
