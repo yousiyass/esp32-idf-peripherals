@@ -10,5 +10,6 @@
       "--compile-commands-dir=c:\\esp_projects\\esp32-idf-peripherals\\build"
     ],
     "idf.port": "COM3",
-    "idf.flashType": "UART"
+    "idf.flashType": "UART",
+    "cmake.sourceDirectory": "C:/esp_projects/esp32-idf-peripherals/01_uart_driver"
 }
