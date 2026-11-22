@@ -6,8 +6,8 @@ Modular peripheral drivers written in C using the official **ESP-IDF** framework
 
 | Module | Protocol | Target / Hardware | Key Concepts | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| `01_uart_driver` | UART | GPS NMEA Parser | FreeRTOS Event Queues, `strtok_r`, XOR Checksum | Completed |
-| `02_i2c_mpu6050` | I2C | MPU6050 IMU | `i2c_master` Bus/Device API, Burst Read, Struct Pointers | Completed |
+| `01_uart_driver` | UART | GPS NMEA Parser | FreeRTOS Event Queues, `strtok_r`, XOR Checksum | Verified (Simulated Data) / Hardware Pending |
+| `02_i2c_mpu6050` | I2C | MPU6050 IMU | `i2c_master` Bus/Device API, Burst Read, Struct Pointers | Code Complete / Hardware Pending |
 | `03_spi_driver` | SPI | *Upcoming* | Full-Duplex Transactions, CS Management, DMA | Planned |
 
 ## Architecture Principles
